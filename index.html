@@ -186,6 +186,43 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;margin:0;cu
 @keyframes stick{from{transform:scale(0) rotate(-200deg)}to{transform:scale(1) rotate(0)}}
 #pop .msg{position:relative;font-size:min(7vh,8vw);color:var(--coral-d);text-shadow:0 3px 0 #fff}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+
+/* 오늘의 시험 */
+.testbar{flex:none;flex-direction:row!important;height:min(14vh,120px);background:linear-gradient(90deg,#FFE38A,#FFC8DD);font-size:min(4.2vh,4.4vw);gap:18px;padding:0 24px}
+.testbar .ico{font-size:min(9vh,9vw);line-height:1}
+.testbar .st{font-size:.75em;background:#fff;border-radius:999px;padding:6px 18px;color:var(--coral-d);box-shadow:0 3px 0 rgba(0,0,0,.06)}
+.testbar .rec{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:min(10vh,84px);height:min(10vh,84px);border-radius:24px;background:#fff;font-size:min(5vh,40px);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+#test{flex-direction:column;padding:4px 16px 16px;gap:8px;align-items:center;touch-action:none}
+.tq{flex:none;font-size:min(4.4vh,4.6vw);color:var(--ink);background:#fff;border-radius:999px;padding:6px 24px;box-shadow:0 4px 0 rgba(0,0,0,.06)}
+.choice.word{width:auto;min-width:min(26vh,26vw);padding:0 22px;font-size:min(7.5vh,7.5vw)}
+.choice.right{box-shadow:0 0 0 8px var(--green),0 8px 0 rgba(0,0,0,.12)!important}
+.boxes div.miss{background:#FFE3E8;color:var(--coral-d)}
+#tResult{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2vh;text-align:center}
+#test.done #tResult{display:flex}
+#test.done > :not(#tResult){display:none}
+.tstamp{font-size:min(20vh,22vw);line-height:1;animation:stick .7s cubic-bezier(.2,1.7,.4,1)}
+.tscore{font-size:min(10vh,11vw);color:var(--coral-d);line-height:1}
+.tmsg{font-size:min(4.4vh,5vw)}
+.twrong{font-size:min(3.2vh,3.6vw);color:var(--soft);max-width:90vw}
+.tbtns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.tbtn{height:76px;padding:0 28px;border-radius:999px;background:#fff;box-shadow:0 6px 0 #E9D9C2;font-size:28px}
+.tbtn.go{background:var(--green);color:#fff;box-shadow:0 6px 0 var(--green-d)}
+.tbtn:active{transform:translateY(4px)}
+/* 시험 기록 달력 */
+#testRec{flex-direction:column;padding:4px 18px 16px;gap:10px}
+.calhead{flex:none;display:flex;align-items:center;justify-content:center;gap:18px;font-size:32px}
+.calhead .rbtn{width:64px}
+.cal{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.cal .wd{font-size:22px;color:var(--soft);text-align:center;align-self:end}
+.cal .wd:first-child{color:var(--coral-d)}
+.cal .d{border-radius:18px;background:rgba(255,255,255,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;color:#C9B8A6;min-height:0;overflow:hidden}
+.cal .d.has{background:#fff;color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.06)}
+.cal .d .m{font-size:min(4.2vh,30px);line-height:1.1}
+.cal .d .sc{font-size:min(2.6vh,18px);color:var(--coral-d)}
+.cal .d.today{box-shadow:0 0 0 4px var(--coral),0 4px 0 rgba(0,0,0,.06)}
+.cal .d.sel{background:var(--yellow)}
+.recinfo{flex:none;min-height:64px;background:#fff;border-radius:24px;padding:12px 20px;font-size:22px;line-height:1.45;box-shadow:0 4px 0 rgba(0,0,0,.06)}
+.recinfo b{color:var(--coral-d)}
 </style>
 </head>
 <body>
@@ -207,6 +244,10 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;margin:0;cu
   </section>
 
   <section id="home" class="screen">
+    <button class="card testbar" id="testBar" data-say="오늘의 시험">
+      <span class="ico">📝</span><span>오늘의 시험</span><span class="st" id="testSt"></span>
+      <span class="rec" id="testRecBtn" role="button" aria-label="시험 기록">📅</span>
+    </button>
     <div class="stage-grid">
       <button class="card stage s1" data-go="learn" data-say="자음 모음 익히기"><span class="num">1</span><span class="ico txt">ㄱㄴㄷ</span><span>👀 익히기</span></button>
       <button class="card stage s2" data-go="pick:jamo" data-say="손으로 따라 쓰기"><span class="num">2</span><span class="ico">✏️</span><span>따라 쓰기</span></button>
@@ -265,6 +306,33 @@ button{font:inherit;color:inherit;border:0;background:none;padding:0;margin:0;cu
 
   <section id="gameC" class="screen">
     <div class="mem" id="mem"></div>
+  </section>
+
+  <section id="test" class="screen">
+    <div class="dots" id="dotsT"></div>
+    <div class="tq" id="tPrompt"></div>
+    <div class="qa"><button class="pic" id="tPic"></button><div class="boxes" id="tBoxes"></div></div>
+    <div class="choices" id="tChoices"></div>
+    <div id="tResult">
+      <div class="tstamp" id="tStamp"></div>
+      <div class="tscore" id="tScore"></div>
+      <div class="tmsg" id="tMsg"></div>
+      <div class="twrong" id="tWrong"></div>
+      <div class="tbtns">
+        <button class="tbtn" id="tAgain">🔁 다시 풀기</button>
+        <button class="tbtn go" id="tRec">📅 기록 보기</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="testRec" class="screen">
+    <div class="calhead">
+      <button class="rbtn" id="calPrev"><span class="arrow">‹</span></button>
+      <span id="calTitle"></span>
+      <button class="rbtn" id="calNext"><span class="arrow">›</span></button>
+    </div>
+    <div class="cal" id="cal"></div>
+    <div class="recinfo" id="recInfo"></div>
   </section>
 
   <section id="book" class="screen">
@@ -341,8 +409,9 @@ const seaItems=SEA.map(([t,emo])=>({t,say:t,emo}));
    저장
 ===================================================== */
 const KEY='hangulPlay.v1';
-let S={stickers:[],done:{},seen:{}};
+let S={stickers:[],done:{},seen:{},tests:{}};
 try{const raw=localStorage.getItem(KEY); if(raw){const o=JSON.parse(raw); S=Object.assign(S,o);} }catch(e){}
+if(!S.tests) S.tests={};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 
 /* =====================================================
@@ -525,7 +594,7 @@ function strokesFor(ch){
 const top=$('#top'), topMid=$('#topMid');
 let cur='splash';
 const Screens={};
-const BACK={write:()=>go('pick',{kind:W.kind}),gameA:()=>go('games'),gameB:()=>go('games'),gameC:()=>go('games')};
+const BACK={write:()=>go('pick',{kind:W.kind}),gameA:()=>go('games'),gameB:()=>go('games'),gameC:()=>go('games'),testRec:()=>go('home')};
 function setMid(html){topMid.innerHTML=html;}
 function go(name,arg){
   if(Screens[cur]&&Screens[cur].leave) Screens[cur].leave();
@@ -551,9 +620,16 @@ $$('[data-go]').forEach(b=>b.onclick=()=>{
 Screens.splash={enter(){}};
 $('#startBtn').onclick=()=>{Sfx.unlock(); Sfx.good(); pickVoice(); go('home',{first:true});};
 Screens.home={
-  enter(a){setMid('<span class="emo">🐳</span><span class="ttl">한글 놀이터</span>'); say(a.first?['안녕! 한글 놀이터에 왔어요.','하고 싶은 놀이를 골라요.']:'하고 싶은 놀이를 골라요.');},
-  hint(){say(['일 번, 글자 익히기.','이 번, 따라 쓰기.','삼 번, 바다 친구 이름 쓰기.','사 번, 놀이 게임.']);}
+  enter(a){
+    setMid('<span class="emo">🐳</span><span class="ttl">한글 놀이터</span>');
+    const r=S.tests[todayKey()], d=new Date();
+    $('#testSt').textContent=r?('✅ '+r.best+' / '+r.total):((d.getMonth()+1)+'월 '+d.getDate()+'일');
+    say(a.first?['안녕! 한글 놀이터에 왔어요.','하고 싶은 놀이를 골라요.']:'하고 싶은 놀이를 골라요.');
+  },
+  hint(){say(['오늘의 시험.','일 번, 글자 익히기.','이 번, 따라 쓰기.','삼 번, 바다 친구 이름 쓰기.','사 번, 놀이 게임.']);}
 };
+$('#testBar').onclick=()=>{Sfx.tap(); go('test');};
+$('#testRecBtn').onclick=e=>{e.stopPropagation(); Sfx.tap(); go('testRec');};
 
 /* ---------- 격자 그리기 ---------- */
 function renderTabs(el,tabs,active,onPick){
@@ -1007,6 +1083,152 @@ Screens.gameC={
 };
 
 /* =====================================================
+   📝 오늘의 시험 (날짜마다 문제가 바뀌고, 날짜별로 기록이 남아요)
+   - 같은 날엔 같은 10문제 → 다시 풀어서 점수 올리기 가능
+   - 힌트 없이 한 번에 고르기, 틀리면 정답을 보여주고 다음 문제로
+   - 기록: 처음 점수 / 최고 점수 / 푼 횟수 / 틀린 것
+===================================================== */
+function pad2(n){return (n<10?'0':'')+n;}
+function dayKey(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function todayKey(){return dayKey(new Date());}
+function seeded(seed){let a=seed>>>0; return ()=>{a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296;};}
+function sshuffle(arr,r){const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;}
+
+function buildTest(key){
+  const r=seeded(+key.replace(/-/g,''));
+  const qs=[];
+  const allJamo=CONS.concat(VOWS);
+  // ① 소리 듣고 자음·모음 고르기 (3문제)
+  sshuffle(allJamo,r).slice(0,3).forEach(t=>{
+    const others=sshuffle(allJamo.filter(j=>j.ch!==t.ch),r).slice(0,3).map(j=>j.ch);
+    qs.push({type:'jamo',say:t.name,ans:t.ch,opts:sshuffle([t.ch].concat(others),r),label:t.ch});
+  });
+  const words=sshuffle(GAME_WORDS,r);
+  const letterPool=[...new Set(GAME_WORDS.map(w=>[...w[0]]).reduce((a,b)=>a.concat(b),[]))];
+  const nearWords=w=>sshuffle(GAME_WORDS.filter(x=>x[0]!==w),r)
+    .sort((a,b)=>Math.abs(a[0].length-w.length)-Math.abs(b[0].length-w.length)).slice(0,2).map(x=>x[0]);
+  // ② 그림 보고 빈칸 글자 고르기 (3문제)
+  words.slice(0,3).forEach(([w,emo])=>{
+    const ch=[...w], bi=Math.floor(r()*ch.length), ans=ch[bi];
+    const opts=sshuffle([ans].concat(sshuffle(letterPool.filter(c=>!ch.includes(c)),r).slice(0,2)),r);
+    qs.push({type:'blank',word:w,emo,bi,ans,say:w,opts,label:w});
+  });
+  // ③ 소리 듣고 낱말 고르기 (2문제)
+  words.slice(3,5).forEach(([w])=>qs.push({type:'hear',word:w,say:w,ans:w,opts:sshuffle([w].concat(nearWords(w)),r),label:w}));
+  // ④ 그림 보고 낱말 읽고 고르기 (2문제, 소리 없이)
+  words.slice(5,7).forEach(([w,emo])=>qs.push({type:'read',word:w,emo,say:w,ans:w,opts:sshuffle([w].concat(nearWords(w)),r),label:w}));
+  return qs;
+}
+
+const T={};
+const TPROMPT={jamo:'소리를 듣고 글자를 골라요',blank:'빈칸에 들어갈 글자를 골라요',hear:'소리를 듣고 낱말을 골라요',read:'그림에 맞는 낱말을 읽고 골라요'};
+function tSpeak(first){
+  const q=T.qs[T.i]; if(!q) return;
+  const lead=first&&T.i===0?['오늘의 시험! 열 문제를 풀어요.']:[];
+  if(q.type==='read') say(lead.concat(TPROMPT.read));
+  else say(lead.concat(first?[TPROMPT[q.type],q.say]:[q.say]));
+}
+function showQ(){
+  if(T.i>=T.qs.length){endTest(); return;}
+  const q=T.qs[T.i]; T.lock=false;
+  dots($('#dotsT'),T.qs.length,T.i);
+  $('#tPrompt').textContent=(T.i+1)+'번. '+TPROMPT[q.type];
+  $('#tPic').textContent=(q.type==='jamo'||q.type==='hear')?'🔊':q.emo;
+  $('#tBoxes').innerHTML=q.type==='blank'?[...q.word].map((c,i)=>i===q.bi?'<div class="blank">?</div>':'<div>'+c+'</div>').join(''):'';
+  const box=$('#tChoices'); box.innerHTML='';
+  q.opts.forEach(o=>{
+    const b=document.createElement('button'); b.className='choice'+(q.type==='hear'||q.type==='read'?' word':''); b.textContent=o;
+    b.onclick=()=>{
+      if(T.lock) return; T.lock=true;
+      const right=$$('.choice',box).find(x=>x.textContent===q.ans);
+      const bl=$('#tBoxes .blank');
+      if(o===q.ans){
+        q.ok=true; Sfx.good(); b.classList.add('right');
+        if(bl){bl.className='fill'; bl.textContent=q.ans;}
+        const rc=b.getBoundingClientRect(); confetti(30,rc.left+rc.width/2,rc.top+rc.height/2);
+        say(['딩동댕!',q.say]);
+      }else{
+        q.ok=false; Sfx.bad(); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+        if(right) right.classList.add('right');
+        if(bl){bl.className='miss'; bl.textContent=q.ans;}
+        say(['정답은',q.type==='jamo'?q.say:q.ans]);
+      }
+      T.i++; dots($('#dotsT'),T.qs.length,T.i);
+      later(()=>{showQ(); tSpeak(false);},q.ok?1500:2600);
+    };
+    box.appendChild(b);
+  });
+}
+function endTest(){
+  const total=T.qs.length, score=T.qs.filter(q=>q.ok).length;
+  const wrong=T.qs.filter(q=>!q.ok).map(q=>q.label);
+  const prev=S.tests[T.key];
+  const rec=prev||{first:score,firstWrong:wrong,best:0,tries:0};
+  rec.tries=(rec.tries||0)+1; rec.best=Math.max(rec.best||0,score); rec.last=score; rec.lastWrong=wrong; rec.total=total;
+  S.tests[T.key]=rec; save();
+  $('#test').classList.add('done');
+  $('#tStamp').textContent=score===total?'💯':score>=8?'🌟':score>=5?'😊':'💪';
+  $('#tScore').textContent=score+' / '+total;
+  const msg=score===total?'모두 맞았어요! 최고예요!':score>=8?'정말 잘했어요!':score>=5?'잘했어요! 조금만 더!':'괜찮아요, 다시 풀어 봐요!';
+  $('#tMsg').textContent=msg+(prev?' (오늘 '+rec.tries+'번째)':'');
+  $('#tWrong').textContent=wrong.length?'다시 볼 것: '+wrong.join(' · '):'';
+  say([score+'개 맞았어요.',msg]);
+  if(!prev) later(()=>award(),1400); else Sfx.good(); // 스티커는 하루 첫 시험에만
+}
+$('#tPic').onclick=()=>{const q=T.qs&&T.qs[T.i]; if(q&&q.type!=='read') say(q.say);};
+$('#tAgain').onclick=()=>{Sfx.tap(); go('test');};
+$('#tRec').onclick=()=>{Sfx.tap(); go('testRec');};
+Screens.test={
+  enter(){
+    setMid('<span class="emo">📝</span><span class="ttl">오늘의 시험</span>');
+    $('#test').classList.remove('done');
+    T.key=todayKey(); T.qs=buildTest(T.key); T.i=0;
+    showQ(); tSpeak(true);
+  },
+  hint(){const q=T.qs[T.i]; if(!q) return; say(q.type==='read'?TPROMPT.read:q.say);},
+  leave(){clearTimers();}
+};
+
+/* ---------- 시험 기록 달력 ---------- */
+const CAL={y:0,m:0,sel:null};
+function renderCal(){
+  const {y,m}=CAL, first=new Date(y,m,1), days=new Date(y,m+1,0).getDate(), start=first.getDay();
+  $('#calTitle').textContent=y+'년 '+(m+1)+'월';
+  const weeks=Math.ceil((start+days)/7), cal=$('#cal');
+  cal.style.gridTemplateRows='auto repeat('+weeks+',1fr)';
+  let html=['일','월','화','수','목','금','토'].map(w=>'<div class="wd">'+w+'</div>').join('');
+  for(let i=0;i<start;i++) html+='<div></div>';
+  const tk=todayKey(); let cnt=0, sum=0;
+  for(let d=1;d<=days;d++){
+    const k=y+'-'+pad2(m+1)+'-'+pad2(d), r=S.tests[k];
+    if(r){cnt++; sum+=r.best;}
+    const mark=r?(r.best===r.total?'💯':r.best>=8?'🌟':'✅'):'';
+    html+='<button class="d'+(r?' has':'')+(k===tk?' today':'')+(k===CAL.sel?' sel':'')+'" data-k="'+k+'">'+d+
+      (r?'<span class="m">'+mark+'</span><span class="sc">'+r.best+'/'+r.total+'</span>':'')+'</button>';
+  }
+  cal.innerHTML=html;
+  $$('.d',cal).forEach(b=>b.onclick=()=>{Sfx.tap(); CAL.sel=b.dataset.k; renderCal();});
+  const info=$('#recInfo'), r=CAL.sel&&S.tests[CAL.sel];
+  if(r){
+    const [yy,mm,dd]=CAL.sel.split('-');
+    info.innerHTML='<b>'+(+mm)+'월 '+(+dd)+'일</b> · 처음 '+r.first+'점 → 최고 <b>'+r.best+'점</b> ('+r.total+'문제, '+r.tries+'번 풀었어요)'+
+      (r.firstWrong&&r.firstWrong.length?'<br>처음에 틀린 것: '+r.firstWrong.join(' · '):'<br>처음부터 다 맞았어요! 💯');
+  }else{
+    info.innerHTML=cnt?('이번 달 <b>'+cnt+'일</b> 시험을 봤어요 · 평균 <b>'+(sum/cnt).toFixed(1)+'점</b><br>날짜를 누르면 자세히 볼 수 있어요'):'이번 달은 아직 시험 기록이 없어요. 📝 오늘의 시험을 풀어 봐요!';
+  }
+}
+$('#calPrev').onclick=()=>{Sfx.tap(); CAL.m--; if(CAL.m<0){CAL.m=11; CAL.y--;} CAL.sel=null; renderCal();};
+$('#calNext').onclick=()=>{Sfx.tap(); CAL.m++; if(CAL.m>11){CAL.m=0; CAL.y++;} CAL.sel=null; renderCal();};
+Screens.testRec={
+  enter(){
+    setMid('<span class="emo">📅</span><span class="ttl">시험 기록</span>');
+    const d=new Date(); CAL.y=d.getFullYear(); CAL.m=d.getMonth(); CAL.sel=S.tests[todayKey()]?todayKey():null;
+    renderCal(); this.hint();
+  },
+  hint(){const n=Object.keys(S.tests).length; say(n?'지금까지 '+n+'일 시험을 봤어요.':'아직 시험 기록이 없어요.');}
+};
+
+/* =====================================================
    스티커북
 ===================================================== */
 Screens.book={
@@ -1029,7 +1251,7 @@ Screens.book={
 (function(){
   const b=$('#resetBtn'); let t=0;
   const start=e=>{e.preventDefault(); t=setTimeout(()=>{
-    if(window.confirm('모은 스티커와 학습 기록을 모두 지울까요?')){S={stickers:[],done:{},seen:{}}; save(); go('book');}
+    if(window.confirm('모은 스티커와 학습 기록을 모두 지울까요?')){S={stickers:[],done:{},seen:{},tests:{}}; save(); go('book');}
   },2000);};
   const stop=()=>clearTimeout(t);
   b.addEventListener('pointerdown',start); ['pointerup','pointerleave','pointercancel'].forEach(n=>b.addEventListener(n,stop));
