@@ -418,10 +418,11 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
    소리: 말하기(Web Speech) + 효과음(Web Audio)
 ===================================================== */
 const V={voice:null,keep:[]};
+function bestKoVoice(){try{const vs=speechSynthesis.getVoices().filter(v=>/^ko/i.test((v.lang||'').replace('_','-'))); if(!vs.length) return null; let want=null; try{want=localStorage.getItem('studyroomVoice');}catch(e){} const m=want&&vs.find(v=>v.voiceURI===want); if(m) return m; const sc=v=>(/premium|프리미엄/i.test(v.name)?50:0)+(/enhanced|향상/i.test(v.name)?40:0)+(/natural|neural|online/i.test(v.name)?30:0)+(/google/i.test(v.name)?10:0)+(/yuna|유나/i.test(v.name)?5:0)+(v.localService?1:0); return vs.slice().sort((a,b)=>sc(b)-sc(a))[0];}catch(e){return null;}}
 function pickVoice(){
   if(!('speechSynthesis' in window)) return;
   const ko=speechSynthesis.getVoices().filter(v=>/^ko/i.test(v.lang));
-  V.voice=ko.find(v=>/yuna|유나|sora|소라/i.test(v.name))||ko.find(v=>v.localService)||ko[0]||null;
+  V.voice=bestKoVoice()||ko[0]||null;
 }
 if('speechSynthesis' in window){pickVoice(); try{speechSynthesis.addEventListener('voiceschanged',pickVoice);}catch(e){speechSynthesis.onvoiceschanged=pickVoice;}}
 function say(parts){
